@@ -17,9 +17,22 @@ def home(request):
 # login user for insta
 logger = logging.getLogger()
 cl = Client()
+import json
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 def loginuser(request):    
+    data = json.loads(request.body.decode('utf-8'))
+    username = data.get('username')
+    password = data.get('password')
+    request.session['USERNAME'] = username
+    request.session['PASSWORD'] = password
     USERNAME='rm99877236'
     PASSWORD='Sharvesh@123'
+
+
+    print(request.session.get('USERNAME'))
+    print(request.session.get('PASSWORD'))
+
     session = cl.load_settings("session.json")
     login_via_session = False
     login_via_pw = False
@@ -182,24 +195,77 @@ class addpost(APIView):
 
         return JsonResponse({'response':media})
 
+from django.http import JsonResponse
+from rest_framework.views import APIView
+# from your_app_name.views import loginuser  # Import the loginuser view
+
 
 class getcommentsonpost(APIView):
     def get(self, request):
-        lis = []
         try:
-            user_id =cl.user_id
-            media_id=cl.user_medias(user_id)
+            user_id = cl.user_id
+            media_id = cl.user_medias(user_id)
+            lis = []
+
             for i in media_id:
                 media_pk = cl.media_id(i.pk)
                 comments = cl.media_comments(media_pk)
-                lis.append(comments)
-            return JsonResponse({'comments on posts': lis})
-        except:
+                
+                # Convert Comment objects to dictionaries
+                comments_data = []
+                for comment in comments:
+                    comment_data = {
+                        "pk": comment.pk,
+                        "text": comment.text,
+                        "user": {
+                            "pk": comment.user.pk,
+                            "username": comment.user.username,
+                            "full_name": comment.user.full_name,
+                            # Add more user attributes if needed
+                        },
+                        "created_at_utc": comment.created_at_utc.strftime('%Y-%m-%d %H:%M:%S'),  # Convert datetime to string
+                        "content_type": comment.content_type,
+                        "status": comment.status,
+                        "has_liked": comment.has_liked,
+                        "like_count": comment.like_count
+                    }
+                    comments_data.append(comment_data)
+                
+                lis.append(comments_data)
+            
+            return JsonResponse({'comments_on_posts': lis})
+        
+        except Exception as e:
+            print("Exception:", e)
             loginuser(request)
-            user_id =cl.user_id
-            media_id=cl.user_medias(user_id)
+            user_id = cl.user_id
+            media_id = cl.user_medias(user_id)
+            lis = []
+
             for i in media_id:
                 media_pk = cl.media_id(i.pk)
                 comments = cl.media_comments(media_pk)
-                lis.append(comments)
-            return JsonResponse({'comments on posts': lis})
+                
+                # Convert Comment objects to dictionaries
+                comments_data = []
+                for comment in comments:
+                    comment_data = {
+                        "pk": comment.pk,
+                        "text": comment.text,
+                        "user": {
+                            "pk": comment.user.pk,
+                            "username": comment.user.username,
+                            "full_name": comment.user.full_name,
+                            # Add more user attributes if needed
+                        },
+                        "created_at_utc": comment.created_at_utc.strftime('%Y-%m-%d %H:%M:%S'),  # Convert datetime to string
+                        "content_type": comment.content_type,
+                        "status": comment.status,
+                        "has_liked": comment.has_liked,
+                        "like_count": comment.like_count
+                    }
+                    comments_data.append(comment_data)
+                
+                lis.append(comments_data)
+            
+            return JsonResponse({'comments_on_posts': lis})
