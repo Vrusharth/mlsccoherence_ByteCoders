@@ -319,10 +319,15 @@ def getuser(request, pk):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
+
+
+
 def logout(request):
-    try:
-        del request.session['USERNAME']
-        del request.session['PASSWORD']
-    except KeyError:
-        pass
-    return HttpResponse("logout successfully!!!")
+    if request.method == 'GET':
+        try:
+            del request.session['USERNAME']
+            del request.session['PASSWORD']
+        except KeyError:
+            pass
+        return HttpResponse("logout successfully!!!")
+
