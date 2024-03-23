@@ -281,6 +281,7 @@ class createprofile(APIView):
         if serializer.is_valid():
             try:
                 thought = Userprofile.objects.create(
+                    username =serializer.validated_data['username'],
                     businessCartegory =serializer.validated_data['businessCartegory'],
                     businessBio =serializer.validated_data['businessBio'],
                     businessObjective =serializer.validated_data['businessObjective'],

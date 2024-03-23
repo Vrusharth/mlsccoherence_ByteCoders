@@ -11,4 +11,4 @@ class Userprofile(models.Model):
     location = models.TextField(null=False,blank=False)
 
     def __str__(self):
-        return f"{self.businessCartegory}"
+        return f"{self.username}"
