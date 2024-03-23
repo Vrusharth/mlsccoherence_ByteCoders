@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Userprofile(models.Model):
+    username = models.TextField(null=False,blank=False)
     businessCartegory = models.TextField(null=False,blank=False)
     businessBio = models.TextField(null=False,blank=False)
     businessObjective = models.TextField(null=False,blank=False)
