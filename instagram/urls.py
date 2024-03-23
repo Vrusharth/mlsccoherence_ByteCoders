@@ -11,4 +11,5 @@ urlpatterns = [
     path('addpost',views.addpost.as_view()),
     path('getcommentsonpost',views.getcommentsonpost.as_view()),
 
+    path('createprofile',views.createprofile.as_view()),
 ]

@@ -6,6 +6,7 @@ import pprint
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.response import Response
+from .serializer import *
 
 # Create your views here.
 def home(request):
@@ -269,3 +270,40 @@ class getcommentsonpost(APIView):
                 lis.append(comments_data)
             
             return JsonResponse({'comments_on_posts': lis})
+
+class createprofile(APIView):
+    def post(self, request):
+        sr_data = request.data
+        user = request.user
+
+        serializer = UserprofileSerializer(data=sr_data)
+
+        if serializer.is_valid():
+            try:
+                thought = Userprofile.objects.create(
+                    businessCartegory =serializer.validated_data['businessCartegory'],
+                    businessBio =serializer.validated_data['businessBio'],
+                    businessObjective =serializer.validated_data['businessObjective'],
+                    businessGoal =serializer.validated_data['businessGoal'],
+                    location =serializer.validated_data['location']
+                )
+                thought.save()
+
+                new_response = UserprofileSerializer(thought)
+
+                return Response({
+                    "status": 200,
+                    "message": "Thought created",
+                    "thought": new_response.data
+                })
+            except Exception as e:
+                return Response({
+                    "status": 400,
+                    "error": f"{e}"
+                })
+        else:
+            return Response({
+                "status": 400,
+                "error": serializer.errors
+            })
+        
