@@ -13,6 +13,7 @@ urlpatterns = [
     path('postinfo',views.postinfo.as_view()),
 
     path('createprofile',views.createprofile.as_view()),
-    path('getuser/<str:pk>/',views.getuser, name='getuser')
+    path('getuser/<str:pk>/',views.getuser, name='getuser'),
 
+    path('suggestionbot',views.suggestionbot.as_view()),
 ]

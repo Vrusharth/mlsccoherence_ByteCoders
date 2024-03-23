@@ -7,6 +7,13 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.response import Response
 from .serializer import *
+from dotenv import load_dotenv
+import os
+import google.generativeai as genai
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework.views import APIView
 
 # Create your views here.
 def home(request):
@@ -18,8 +25,6 @@ def home(request):
 # login user for insta
 logger = logging.getLogger()
 cl = Client()
-import json
-from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def loginuser(request):    
     # data = json.loads(request.body.decode('utf-8'))
@@ -202,10 +207,6 @@ class addpost(APIView):
 
         return JsonResponse({'response':media})
 
-from django.http import JsonResponse
-from rest_framework.views import APIView
-# from your_app_name.views import loginuser  # Import the loginuser view
-
 
 class getcommentsonpost(APIView):
     def get(self, request):
@@ -325,7 +326,6 @@ def getuser(request, pk):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
-from django.http import JsonResponse
 
 class postinfo(APIView):
     def get(self, request):
@@ -350,3 +350,22 @@ class postinfo(APIView):
         # Return JSON response with posts data
         return JsonResponse({'posts': posts_data})
 
+class suggestionbot(APIView):
+    def get(self, request):
+
+        load_dotenv()
+        genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
+
+        def get_response(input_text):
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(["input_text"])
+            print(response.text)
+            return response.text
+
+
+        while True:
+            user_input = "what is full form of api"
+            response = get_response(user_input)
+            print("\nResponse from Assistance Bot:")
+            print(response)
+            return HttpResponse('soham is great')
