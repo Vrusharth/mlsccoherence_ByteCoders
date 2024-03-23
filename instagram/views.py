@@ -318,3 +318,11 @@ def getuser(request, pk):
             return JsonResponse({'error': 'Thought not found'}, status=404)
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
+
+def logout(request):
+    try:
+        del request.session['USERNAME']
+        del request.session['PASSWORD']
+    except KeyError:
+        pass
+    return HttpResponse("logout successfully!!!")

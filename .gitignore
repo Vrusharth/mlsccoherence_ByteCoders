@@ -1,0 +1,10 @@
+media/*
+db.sqlite3
+venv
+__pycache__
+*/migrations/*
+.env
+staticfiles/*
+
+venturebuddy.pem
+vbuddy.pem
