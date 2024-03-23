@@ -22,12 +22,12 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def loginuser(request):    
     data = json.loads(request.body.decode('utf-8'))
-    username = data.get('username')
-    password = data.get('password')
-    request.session['USERNAME'] = username
-    request.session['PASSWORD'] = password
-    USERNAME='rm99877236'
-    PASSWORD='Sharvesh@123'
+    USERNAME = data.get('username')
+    PASSWORD = data.get('password')
+    request.session['USERNAME'] = USERNAME
+    request.session['PASSWORD'] = PASSWORD
+    # USERNAME='rm99877236'
+    # PASSWORD='Sharvesh@123'
 
 
     print(request.session.get('USERNAME'))
