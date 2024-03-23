@@ -344,6 +344,8 @@ class postinfo(APIView):
                 "likes": post.like_count,
                 "comments": post.comment_count,
                 "type": post.media_type,
+                "thumbnail_url": f"{post.thumbnail_url}",
+                "share": f"{post.view_count}",
             }
             posts_data.append(post_data)
 
@@ -352,20 +354,11 @@ class postinfo(APIView):
 
 class suggestionbot(APIView):
     def get(self, request):
-
-        load_dotenv()
         genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
 
-        def get_response(input_text):
-            model = genai.GenerativeModel('gemini-pro')
-            response = model.generate_content(["input_text"])
-            print(response.text)
-            return response.text
-
-
-        while True:
-            user_input = "what is full form of api"
-            response = get_response(user_input)
-            print("\nResponse from Assistance Bot:")
-            print(response)
-            return HttpResponse('soham is great')
+        user_input = "what is full form of api"
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(user_input)
+        print("\nResponse from Assistance Bot:")
+        print(response.text)
+        return HttpResponse(response.text)
