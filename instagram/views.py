@@ -23,16 +23,14 @@ from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def loginuser(request):    
     data = json.loads(request.body.decode('utf-8'))
-    USERNAME = data.get('username')
-    PASSWORD = data.get('password')
-    request.session['USERNAME'] = USERNAME
-    request.session['PASSWORD'] = PASSWORD
-    # USERNAME='rm99877236'
-    # PASSWORD='Sharvesh@123'
+    request.session['username'] = data.get('username')
+    request.session['password'] = data.get('password')
+    # username='rm99877236'
+    # password='Sharvesh@123'
 
 
-    print(request.session.get('USERNAME'))
-    print(request.session.get('PASSWORD'))
+    print(request.session.get('username'))
+    print(request.session.get('password'))
 
     session = cl.load_settings("session.json")
     login_via_session = False
@@ -42,7 +40,7 @@ def loginuser(request):
     if session:
         try:
             cl.set_settings(session)
-            cl.login(USERNAME, PASSWORD)
+            cl.login(request.session.get('username'), request.session.get('password'))
 
             # check if session is valid
             try:
@@ -56,15 +54,15 @@ def loginuser(request):
                 cl.set_settings({})
                 cl.set_uuids(old_session["uuids"])
 
-                cl.login(USERNAME, PASSWORD)
+                cl.login(request.session.get('username'), request.session.get('password'))
             login_via_session = True
         except Exception as e:
             logger.info("Couldn't login user using session information: %s" % e)
 
     if not login_via_session:
         try:
-            logger.info("Attempting to login via username and password. username: %s" % USERNAME)
-            if cl.login(USERNAME, PASSWORD):
+            logger.info("Attempting to login via username and password. username: %s" % request.session.get('username'))
+            if cl.login(request.session.get('username'), request.session.get('password')):
                 login_via_pw = True
         except Exception as e:
             logger.info("Couldn't login user using username and password: %s" % e)
@@ -319,15 +317,20 @@ def getuser(request, pk):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
+def check(request):
+    print(request.session.get('username'))
+    print(request.session.get('password'))
+    return HttpResponse("nsjk")
 
-
+from django.contrib.sessions.models import Session
 
 def logout(request):
     if request.method == 'GET':
         try:
-            del request.session['USERNAME']
-            del request.session['PASSWORD']
-        except KeyError:
-            pass
+            del request.session['username']
+            del request.session['password']
+            request.session.flush()  # Completely clear the session
+            print("done")
+        except Exception as e:
+            print("e", e)
         return HttpResponse("logout successfully!!!")
-

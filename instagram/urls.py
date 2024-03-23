@@ -14,4 +14,5 @@ urlpatterns = [
     path('createprofile',views.createprofile.as_view()),
     path('getuser/<str:pk>/',views.getuser, name='getuser'),
     path('logout',views.logout, name='logout'),
+    path('check',views.check, name='check'),
 ]
