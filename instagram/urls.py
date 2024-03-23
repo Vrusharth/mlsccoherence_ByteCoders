@@ -12,4 +12,5 @@ urlpatterns = [
     path('getcommentsonpost',views.getcommentsonpost.as_view()),
 
     path('createprofile',views.createprofile.as_view()),
+    path('getuser/<str:pk>/',views.getuser, name='getuser'),
 ]

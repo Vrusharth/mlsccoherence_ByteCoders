@@ -306,4 +306,14 @@ class createprofile(APIView):
                 "status": 400,
                 "error": serializer.errors
             })
-        
+
+def getuser(request, pk):
+    if request.method == 'GET':
+        try:
+            thought_instance = Userprofile.objects.get(username=pk)
+            serializer = UserprofileSerializer(thought_instance)
+            return JsonResponse(serializer.data, safe=False)
+        except Userprofile.DoesNotExist:
+            return JsonResponse({'error': 'Thought not found'}, status=404)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
