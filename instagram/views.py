@@ -5,6 +5,7 @@ import logging
 import pprint
 from rest_framework.views import APIView
 from django.http import JsonResponse
+from rest_framework.response import Response
 
 # Create your views here.
 def home(request):
@@ -90,18 +91,49 @@ class accountinsight(APIView):
 
             return JsonResponse({'accountinsights': acc_dict})
 
-    
+
 class accountinfo(APIView):
     def get(self, request):
         try:
             account_info=cl.account_info()
+            data = {
+                "pk": account_info.pk,
+                "username": account_info.username,
+                "full_name": account_info.full_name,
+                "is_private": account_info.is_private,
+                "profile_pic_url": str(account_info.profile_pic_url),
+                "is_verified": account_info.is_verified,
+                "biography": account_info.biography,
+                "external_url": account_info.external_url,
+                "is_business": account_info.is_business,
+                "birthday": account_info.birthday,
+                "phone_number": account_info.phone_number,
+                "gender": account_info.gender,
+                "email": account_info.email
+            }
+            return JsonResponse({'data':data})
         except:
             print("in except")
             loginuser(request)
             account_info=cl.account_info()
-        print(account_info)
-        return JsonResponse({'accountinfo': account_info})
-    
+            data = {
+                "pk": account_info.pk,
+                "username": account_info.username,
+                "full_name": account_info.full_name,
+                "is_private": account_info.is_private,
+                "profile_pic_url": str(account_info.profile_pic_url),
+                "is_verified": account_info.is_verified,
+                "biography": account_info.biography,
+                "external_url": account_info.external_url,
+                "is_business": account_info.is_business,
+                "birthday": account_info.birthday,
+                "phone_number": account_info.phone_number,
+                "gender": account_info.gender,
+                "email": account_info.email
+            }
+            return JsonResponse({'data':data})
+
+
 class postinsight(APIView):
     def get(self, request):
         lis = []
@@ -160,8 +192,8 @@ class getcommentsonpost(APIView):
             for i in media_id:
                 media_pk = cl.media_id(i.pk)
                 comments = cl.media_comments(media_pk)
-                print('----->',comments)
                 lis.append(comments)
+            return JsonResponse({'comments on posts': lis})
         except:
             loginuser(request)
             user_id =cl.user_id
@@ -169,6 +201,5 @@ class getcommentsonpost(APIView):
             for i in media_id:
                 media_pk = cl.media_id(i.pk)
                 comments = cl.media_comments(media_pk)
-                print('----->',comments)
                 lis.append(comments)
-        return JsonResponse({'comments on posts': lis})
+            return JsonResponse({'comments on posts': lis})
