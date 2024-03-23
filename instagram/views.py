@@ -22,16 +22,9 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 def loginuser(request):    
-    data = json.loads(request.body.decode('utf-8'))
-    request.session['username'] = data.get('username')
-    request.session['password'] = data.get('password')
-    # username='rm99877236'
-    # password='Sharvesh@123'
-
-
-    print(request.session.get('username'))
-    print(request.session.get('password'))
-
+    # data = json.loads(request.body.decode('utf-8'))
+    username = "rm99877236"
+    password = "Sharvesh@123"
     session = cl.load_settings("session.json")
     login_via_session = False
     login_via_pw = False
@@ -40,7 +33,7 @@ def loginuser(request):
     if session:
         try:
             cl.set_settings(session)
-            cl.login(request.session.get('username'), request.session.get('password'))
+            cl.login(username, password)
 
             # check if session is valid
             try:
@@ -54,15 +47,15 @@ def loginuser(request):
                 cl.set_settings({})
                 cl.set_uuids(old_session["uuids"])
 
-                cl.login(request.session.get('username'), request.session.get('password'))
+                cl.login(username, password)
             login_via_session = True
         except Exception as e:
             logger.info("Couldn't login user using session information: %s" % e)
 
     if not login_via_session:
         try:
-            logger.info("Attempting to login via username and password. username: %s" % request.session.get('username'))
-            if cl.login(request.session.get('username'), request.session.get('password')):
+            logger.info("Attempting to login via username and password. username: %s" % username)
+            if cl.login(username, password):
                 login_via_pw = True
         except Exception as e:
             logger.info("Couldn't login user using username and password: %s" % e)
@@ -72,19 +65,26 @@ def loginuser(request):
     # return JsonResponse({'loggedin successfully!!!'})
     return HttpResponse("loggedin successfully")
 
-    
 class accountinsight(APIView):
     def get(self, request):
         try:
             print("in try")
             cl.insights_media_feed_all("ALL", "ONE_WEEK", "LIKE_COUNT")
             acc_details = cl.insights_account()
+            print(acc_details)
 
-            # Convert Account object to dictionary
+            # Constructing the response dictionary
             acc_dict = {
-                "attribute1": acc_details.attribute1,
-                "attribute2": acc_details.attribute2,
-                # Add more attributes as needed
+                "status": acc_details.get("status"),
+                "account_insights_unit": acc_details.get("account_insights_unit"),
+                "followers_unit": acc_details.get("followers_unit"),
+                "account_summary_unit": acc_details.get("account_summary_unit"),
+                "top_posts_unit": acc_details.get("top_posts_unit"),
+                "stories_unit": acc_details.get("stories_unit"),
+                "promotions_unit": acc_details.get("promotions_unit"),
+                "partner_top_posts_unit": acc_details.get("partner_top_posts_unit"),
+                "partner_stories_unit": acc_details.get("partner_stories_unit")
+                # Add more key-value pairs as needed
             }
 
             return JsonResponse({'accountinsights': acc_dict})
@@ -93,12 +93,20 @@ class accountinsight(APIView):
             loginuser(request)
             cl.insights_media_feed_all("ALL", "ONE_WEEK", "LIKE_COUNT")
             acc_details = cl.insights_account()
+            print(acc_details)
 
-            # Convert Account object to dictionary
+            # Constructing the response dictionary
             acc_dict = {
-                "attribute1": acc_details.attribute1,
-                "attribute2": acc_details.attribute2,
-                # Add more attributes as needed
+                "status": acc_details.get("status"),
+                "account_insights_unit": acc_details.get("account_insights_unit"),
+                "followers_unit": acc_details.get("followers_unit"),
+                "account_summary_unit": acc_details.get("account_summary_unit"),
+                "top_posts_unit": acc_details.get("top_posts_unit"),
+                "stories_unit": acc_details.get("stories_unit"),
+                "promotions_unit": acc_details.get("promotions_unit"),
+                "partner_top_posts_unit": acc_details.get("partner_top_posts_unit"),
+                "partner_stories_unit": acc_details.get("partner_stories_unit")
+                # Add more key-value pairs as needed
             }
 
             return JsonResponse({'accountinsights': acc_dict})
@@ -317,20 +325,28 @@ def getuser(request, pk):
     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 
-def check(request):
-    print(request.session.get('username'))
-    print(request.session.get('password'))
-    return HttpResponse("nsjk")
+from django.http import JsonResponse
 
-from django.contrib.sessions.models import Session
+class postinfo(APIView):
+    def get(self, request):
+        loginuser(request)
+        user_id = cl.user_id_from_username("rm99877236")
+        posts = cl.user_medias(user_id)
+        
+        # Create a list to store post data
+        posts_data = []
+        
+        # Iterate over posts and extract relevant data
+        for post in posts:
+            post_data = {
+                "id": post.id,
+                "caption": post.caption_text,
+                "likes": post.like_count,
+                "comments": post.comment_count,
+                "type": post.media_type,
+            }
+            posts_data.append(post_data)
 
-def logout(request):
-    if request.method == 'GET':
-        try:
-            del request.session['username']
-            del request.session['password']
-            request.session.flush()  # Completely clear the session
-            print("done")
-        except Exception as e:
-            print("e", e)
-        return HttpResponse("logout successfully!!!")
+        # Return JSON response with posts data
+        return JsonResponse({'posts': posts_data})
+
