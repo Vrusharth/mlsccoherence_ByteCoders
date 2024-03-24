@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 from django.http import JsonResponse
 from rest_framework.response import Response
 from .serializer import *
-from dotenv import load_dotenv
 import os
 import google.generativeai as genai
 import json
@@ -367,7 +366,7 @@ class suggestionbot(APIView):
 
 import nltk
 from nltk.chat.util import Chat, reflections
-nltk.download('punkt')
+# nltk.download('punkt')
 pairs = [
     [
         r"hi|hey|hello",
@@ -422,39 +421,44 @@ def get_sentiment(text):
         return "positive"
     else:
         return "very positive"
-
+    
 def get_response(input_text):
     sentiment = get_sentiment(input_text)
     if sentiment == "very negative":
-        return "I'm sorry to hear that. I would suggest you call on +91 9619121679 and consult our mental health professional"
+        return "I'm sorry to hear that. but the comments on your channel is very negative so plz improve your content"
     elif sentiment == "negative":
-        return "I'm sorry that you're feeling down. How can I help you feel better?"
+        return "I'm sorry but the comments are negative"
     elif sentiment == "neutral":
-        return "I'm here to listen. Is there anything you'd like to talk about?"
+        return "I'm here to listen.your chats are neutral?"
     elif sentiment == "positive":
-        return "That's great to hear! Is there anything specific you'd like to discuss?"
+        return "That's great to hear! Chats on your channels are postive ?"
     elif sentiment == "very positive":
-        return "I'm glad to hear that you're doing well! Is there anything you'd like to talk about?"
-
+        return "That's great to hear! Chats on your channels are very postive"
 
 
 class PostQuery(APIView):
     
     def post(self, request):
+        res=[]
+        sent=[]
         data = request.data
         print("This is the data", data['query'])
         
         try:
             user_input = data['query']
-            if user_input.lower() == 'quit':
-                print(chatbot.respond(user_input))
-            else:
-                response = get_response(user_input)
-                sentiment = get_sentiment(response)
-                print(response)
-                print(f"Sentiment: {sentiment}")
+            print('--->',user_input)
+            for inp in user_input:
+                if inp.lower() == 'quit':
+                    print(chatbot.respond(inp))
+                else:
+                    response = get_response(inp)
+                    sentiment = get_sentiment(response)
+                    print(response)
+                    res.append(response)
+                    sent.append(sentiment)
+                    print(f"Sentiment: {sentiment}")
                 
-            return JsonResponse({'response': sentiment})
+            return JsonResponse({ 'sentiments':sent})
                 
         except Exception as e:
             print("Error: ", str(e))
