@@ -16,4 +16,6 @@ urlpatterns = [
     path('getuser/<str:pk>/',views.getuser, name='getuser'),
 
     path('suggestionbot',views.suggestionbot.as_view()),
+    path('postquery/',views.PostQuery.as_view()), # These the url for sentiments
+
 ]
