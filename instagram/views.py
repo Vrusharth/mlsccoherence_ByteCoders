@@ -13,6 +13,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework.views import APIView
+import requests
 
 # Create your views here.
 def home(request):
@@ -352,11 +353,30 @@ class postinfo(APIView):
         # Return JSON response with posts data
         return JsonResponse({'posts': posts_data})
 
-class suggestionbot(APIView):
+class profilesuggestionbot(APIView):
     def get(self, request):
         genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
-        
-        user_input = f""
+        response1 = requests.get('http://localhost:8000/accountinsight')  
+        response2 = requests.get('http://localhost:8000/accountinfo')  
+        json_data1 = response1.json()
+        json_data2 = response2.json()
+        # print(json_data1, "soham is great", json_data2)
+        user_input = f"Here is a profile page of a instagram user who is a buisnessman and has a buisness of battreies i will provide you the data in form of json you need to analyse the data and try to suggest some ides like to update the bio of instagram, post frequently, etc. this is the json of data {json_data1} {json_data2} please answer in bullet format and proper sequence and analyse the profile information provided and accordingly suggest something personalized, also note that the data is of instagram"
+        model = genai.GenerativeModel('gemini-pro')
+        response = model.generate_content(user_input)
+        print("\nResponse from Assistance Bot:")
+        print(response.text)
+        return HttpResponse(response.text)
+
+class postsuggestionbot(APIView):
+    def get(self, request):
+        genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
+        response1 = requests.get('http://localhost:8000/postinsight')  
+        response2 = requests.get('http://localhost:8000/postinfo')  
+        json_data1 = response1.json()
+        json_data2 = response2.json()
+        # print(json_data1, "soham is great", json_data2)
+        user_input = f"Here is the data for the posts of a user who has a buisness of batteries  {json_data1} {json_data2} i want you to suggest the user some ideas or points that will help the user to expand the buisness and reach more users and attract more users please answer in bullet format and proper sequence and analyse the post information provided very carefully and accordingly suggest something personalized, also note that the data is of instagram"
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(user_input)
         print("\nResponse from Assistance Bot:")
