@@ -356,8 +356,8 @@ class postinfo(APIView):
 class profilesuggestionbot(APIView):
     def get(self, request):
         genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
-        response1 = requests.get('http://localhost:8000/accountinsight')  
-        response2 = requests.get('http://localhost:8000/accountinfo')  
+        response1 = requests.get('http://localhost:9000/accountinsight')  
+        response2 = requests.get('http://localhost:9000/accountinfo')  
         json_data1 = response1.json()
         json_data2 = response2.json()
         # print(json_data1, "soham is great", json_data2)
@@ -371,8 +371,8 @@ class profilesuggestionbot(APIView):
 class postsuggestionbot(APIView):
     def get(self, request):
         genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
-        response1 = requests.get('http://localhost:8000/postinsight')  
-        response2 = requests.get('http://localhost:8000/postinfo')  
+        response1 = requests.get('http://localhost:9000/postinsight')  
+        response2 = requests.get('http://localhost:9000/postinfo')  
         json_data1 = response1.json()
         json_data2 = response2.json()
         # print(json_data1, "soham is great", json_data2)
