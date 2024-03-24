@@ -355,8 +355,8 @@ class postinfo(APIView):
 class suggestionbot(APIView):
     def get(self, request):
         genai.configure(api_key="AIzaSyAje4c-yOKwI8GcBgO0EdrnCx-uum0hW20")
-
-        user_input = "what is full form of api"
+        
+        user_input = f""
         model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(user_input)
         print("\nResponse from Assistance Bot:")
