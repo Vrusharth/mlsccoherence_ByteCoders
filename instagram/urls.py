@@ -17,6 +17,6 @@ urlpatterns = [
 
     path('profilesuggestionbot',views.profilesuggestionbot.as_view()),
     path('postsuggestionbot',views.postsuggestionbot.as_view()),
-    path('postquery',views.PostQuery.as_view()), # These the url for sentiments
+    path('postquery/',views.PostQuery.as_view()), # These the url for sentiments
 
 ]
